@@ -21,7 +21,6 @@ public class LRUCache {
 		this.ageCounter = 0;
 		map = new HashMap<Integer, Integer>();
 		ageMap = new HashMap<Integer, Integer>();
-		minVal = Integer.MAX_VALUE;
 	}
 
 	/*
@@ -29,7 +28,9 @@ public class LRUCache {
 	 */
 	public int get(int x) {
 		if (map.containsKey(x)) {
-			ageMap.put(x, ageMap.get(x) + 1);
+			// ageMap.put(x, ageMap.get(x) + 1);
+			ageCounter = ageCounter + 1;
+			ageMap.put(x, ageCounter);
 			return map.get(x);
 		} else {
 			return -1;
@@ -38,21 +39,27 @@ public class LRUCache {
 
 	/* Sets the key x with value y in the LRU cache */
 	public void set(int x, int y) {
-		if (!map.containsKey(x)) {
-			if (map.size() == capacity) {
+		// if (!map.containsKey(x)) {
+		minVal = Integer.MAX_VALUE;
+		if (map.size() == capacity) {
+			if (map.containsKey(x)) {
 				for (Map.Entry<Integer, Integer> entry : ageMap.entrySet()) {
+					// System.out.println(entry.getKey()+"="+entry.getValue());
 					if (entry.getValue() < minVal) {
-						minVal = Integer.min(minVal, entry.getValue());
+						minVal = entry.getValue();
 						minKey = entry.getKey();
 					}
 				}
-				//System.out.println("minKey:"+minKey);
+				// System.out.println("minKey:"+minKey);
+				ageMap.remove(minKey);
 				map.remove(minKey);
 			}
-			ageCounter = ageCounter + 1;
-			ageMap.put(x, ageCounter);
-			map.put(x, y);
 		}
+		ageCounter = ageCounter + 1;
+		ageMap.put(x, ageCounter);
+		map.put(x, y);
+		// System.out.println("capacity:"+capacity+"size:"+map.size());
+		// }
 	}
 
 	public static void main(String[] args) {
